@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 import joblib
 from pathlib import Path
 
-studs = pd.read_csv(Path('C:/Users/Жак/Desktop/Plane Price.csv'))
+studs = pd.read_csv(Path('C:/Users/Ð–Ð°Ðº/Desktop/Plane Price.csv'))
 print(studs.head())
 
 studs.dropna(subset = 'Price',inplace = True)
@@ -40,13 +40,13 @@ from tensorflow.keras import backend as K
 import matplotlib.pyplot as plt
 
 
-# 1. Определение R² метрики (добавляем accuracy-аналог для регрессии)
+# 1. ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¸Ðµ RÂ² Ð¼ÐµÑ‚Ñ€Ð¸ÐºÐ¸ (Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ accuracy-Ð°Ð½Ð°Ð»Ð¾Ð³ Ð´Ð»Ñ Ñ€ÐµÐ³Ñ€ÐµÑÑÐ¸Ð¸)
 def r_squared(y_true, y_pred):
     SS_res = K.sum(K.square(y_true - y_pred))
     SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
     return 1 - SS_res/(SS_tot + K.epsilon())
 
-# 2. Создание модели
+# 2. Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¼Ð¾Ð´ÐµÐ»Ð¸
 model = Sequential([
     Dense(128, activation='relu', input_shape=(X_train.shape[1],)),
     Dropout(0.3),
@@ -56,12 +56,12 @@ model = Sequential([
     Dense(1)
 ])
 
-# 3. Компиляция с тремя метриками
+# 3. ÐšÐ¾Ð¼Ð¿Ð¸Ð»ÑÑ†Ð¸Ñ Ñ Ñ‚Ñ€ÐµÐ¼Ñ Ð¼ÐµÑ‚Ñ€Ð¸ÐºÐ°Ð¼Ð¸
 model.compile(optimizer=Adam(learning_rate=0.001),
               loss='mse',
-              metrics=['mae', r_squared])  # Теперь 2 метрики + loss = всего 3 значения
+              metrics=['mae', r_squared])  # Ð¢ÐµÐ¿ÐµÑ€ÑŒ 2 Ð¼ÐµÑ‚Ñ€Ð¸ÐºÐ¸ + loss = Ð²ÑÐµÐ³Ð¾ 3 Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ
 
-# 4. Обучение
+# 4. ÐžÐ±ÑƒÑ‡ÐµÐ½Ð¸Ðµ
 history = model.fit(
     X_train, y_train,
     validation_data=(X_test, y_test),
@@ -71,7 +71,7 @@ history = model.fit(
     verbose=1
 )
 
-# 5. Визуализация
+# 5. Ð’Ð¸Ð·ÑƒÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ñ
 plt.figure(figsize=(12, 4))
 
 # Loss
@@ -88,22 +88,22 @@ plt.plot(history.history['val_mae'], label='Validation')
 plt.title('MAE')
 plt.legend()
 
-# R²
+# RÂ²
 plt.subplot(1, 3, 3)
 plt.plot(history.history['r_squared'], label='Train')
 plt.plot(history.history['val_r_squared'], label='Validation')
-plt.title('R² Score')
+plt.title('RÂ² Score')
 plt.legend()
 
 plt.tight_layout()
 plt.show()
 
-# 6. Оценка модели (теперь правильно распаковываем 3 значения)
+# 6. ÐžÑ†ÐµÐ½ÐºÐ° Ð¼Ð¾Ð´ÐµÐ»Ð¸ (Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ð¾ Ñ€Ð°ÑÐ¿Ð°ÐºÐ¾Ð²Ñ‹Ð²Ð°ÐµÐ¼ 3 Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ)
 test_loss, test_mae, test_r2 = model.evaluate(X_test, y_test, verbose=0)
 print(f"\nTest Results:")
 print(f"MSE (Loss): {test_loss:.2f}")
 print(f"MAE: {test_mae:.2f}")
-print(f"R² Score: {test_r2:.2f}")
+print(f"RÂ² Score: {test_r2:.2f}")
 
 from tensorflow.keras.models import load_model
 
@@ -113,4 +113,4 @@ model.save("my_model.keras")
 import os
 
 file_size = os.path.getsize("my_model.keras")
-print(f"� азмер файла: {file_size} байт") 
+print(f"Ð Ð°Ð·Ð¼ÐµÑ€ Ñ„Ð°Ð¹Ð»Ð°: {file_size} Ð±Ð°Ð¹Ñ‚") 
