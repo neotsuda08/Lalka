@@ -1,0 +1,116 @@
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+import joblib
+from pathlib import Path
+
+studs = pd.read_csv(Path('C:/Users/Жак/Desktop/Plane Price.csv'))
+print(studs.head())
+
+studs.dropna(subset = 'Price',inplace = True)
+
+studs = studs[["Rcmnd cruise Knots", "Stall Knots dirty", "Fuel gal/lbs", "Eng out rate of climb", "Takeoff over 50ft", "Price"]]
+studs = studs.dropna()
+
+print(studs.head())
+
+Y = studs['Price']
+X = studs.drop("Price", axis=1)
+
+from sklearn.preprocessing import StandardScaler, MinMaxScaler  
+
+ss = StandardScaler()
+x2 = ss.fit_transform(X)
+
+x2 = pd.DataFrame(x2)
+print (x2.head(3))
+
+from sklearn.model_selection import train_test_split
+
+
+X_train_full,X_test,y_train_full,y_test = train_test_split(X,Y,test_size=0.2,random_state=0)
+X_train,X_valid,y_train,y_valid = train_test_split(X_train_full,y_train_full,test_size=0.2,random_state=0)
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras import backend as K
+import matplotlib.pyplot as plt
+
+
+# 1. Определение R² метрики (добавляем accuracy-аналог для регрессии)
+def r_squared(y_true, y_pred):
+    SS_res = K.sum(K.square(y_true - y_pred))
+    SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
+    return 1 - SS_res/(SS_tot + K.epsilon())
+
+# 2. Создание модели
+model = Sequential([
+    Dense(128, activation='relu', input_shape=(X_train.shape[1],)),
+    Dropout(0.3),
+    Dense(64, activation='relu'),
+    Dropout(0.2),
+    Dense(32, activation='relu'),
+    Dense(1)
+])
+
+# 3. Компиляция с тремя метриками
+model.compile(optimizer=Adam(learning_rate=0.001),
+              loss='mse',
+              metrics=['mae', r_squared])  # Теперь 2 метрики + loss = всего 3 значения
+
+# 4. Обучение
+history = model.fit(
+    X_train, y_train,
+    validation_data=(X_test, y_test),
+    epochs=100,
+    batch_size=32,
+    callbacks=[EarlyStopping(monitor='val_loss', patience=10)],
+    verbose=1
+)
+
+# 5. Визуализация
+plt.figure(figsize=(12, 4))
+
+# Loss
+plt.subplot(1, 3, 1)
+plt.plot(history.history['loss'], label='Train')
+plt.plot(history.history['val_loss'], label='Validation')
+plt.title('Loss (MSE)')
+plt.legend()
+
+# MAE
+plt.subplot(1, 3, 2)
+plt.plot(history.history['mae'], label='Train')
+plt.plot(history.history['val_mae'], label='Validation')
+plt.title('MAE')
+plt.legend()
+
+# R²
+plt.subplot(1, 3, 3)
+plt.plot(history.history['r_squared'], label='Train')
+plt.plot(history.history['val_r_squared'], label='Validation')
+plt.title('R² Score')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# 6. Оценка модели (теперь правильно распаковываем 3 значения)
+test_loss, test_mae, test_r2 = model.evaluate(X_test, y_test, verbose=0)
+print(f"\nTest Results:")
+print(f"MSE (Loss): {test_loss:.2f}")
+print(f"MAE: {test_mae:.2f}")
+print(f"R² Score: {test_r2:.2f}")
+
+from tensorflow.keras.models import load_model
+
+
+model.save("my_model.keras")
+
+import os
+
+file_size = os.path.getsize("my_model.keras")
+print(f"� азмер файла: {file_size} байт") 

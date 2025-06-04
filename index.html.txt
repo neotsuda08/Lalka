@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Price Estimator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="min-h-screen bg-gray-100">
+        <header class="bg-blue-800 text-white shadow-lg">
+            <div class="container mx-auto px-4 py-6">
+                <h1 class="text-2xl font-bold">AIRCRAFT PRICE ESTIMATOR</h1>
+            </div>
+        </header>
+
+        <main class="container mx-auto px-4 py-8">
+            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">Enter Aircraft Parameters</h2>
+                
+                <form method="post" action="/predict" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block mb-1">Cruise Speed (knots)</label>
+                            <input type="number" name="rcmnd_cruise_knots" required class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block mb-1">Stall Speed (knots)</label>
+                            <input type="number" name="stall_knots_dirty" required class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block mb-1">Fuel Capacity (gallons)</label>
+                            <input type="number" name="fuel_gal_lbs" required class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block mb-1">Climb Rate (ft/min)</label>
+                            <input type="number" name="eng_out_rate_of_climb" required class="w-full p-2 border rounded">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block mb-1">Takeoff Distance (ft)</label>
+                            <input type="number" name="takeoff_over_50ft" required class="w-full p-2 border rounded">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700">
+                        Calculate Price
+                    </button>
+                </form>
+                
+                {% if show_result %}
+                <div class="mt-8 p-6 bg-green-50 rounded-lg border border-green-200">
+                    <h3 class="text-lg font-semibold mb-2">Price Estimation</h3>
+                    <div class="text-4xl font-bold text-green-700">${{ predicted_price }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</body>
+</html>

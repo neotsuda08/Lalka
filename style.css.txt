@@ -1,0 +1,8 @@
+.gradient-bg {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+}
+
+.result-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
